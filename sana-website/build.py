@@ -161,7 +161,8 @@ def footer():
 
 def page(filename, title_ar, title_en, desc, body):
     title = f"{title_en} | Sana Technology" if filename != "index.html" else "Sana Technology | Tech Beyond Time"
-    canonical = SITE_URL + "/" + ("" if filename == "index.html" else filename)
+    # Cloudflare Pages serves /about.html at /about, so canonical URLs drop ".html"
+    canonical = SITE_URL + "/" + ("" if filename == "index.html" else filename[:-5])
     return f'''<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -487,11 +488,15 @@ PAGES = [
 
 os.makedirs(OUT, exist_ok=True)
 for fn, ar, en, desc, body in PAGES:
+    out = page(fn, ar, en, desc, body)
+    if fn == "404.html":
+        # 404 can be served at any depth (e.g. /a/b), so resolve its relative links from the site root
+        out = out.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n  <base href="/">\n  <meta name="robots" content="noindex">', 1)
     with open(os.path.join(OUT, fn), "w", encoding="utf-8") as f:
-        f.write(page(fn, ar, en, desc, body))
+        f.write(out)
 
 with open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8") as f:
-    urls = "".join(f"  <url><loc>{SITE_URL}/{'' if fn == 'index.html' else fn}</loc></url>\n" for fn, *_ in PAGES if fn != "404.html")
+    urls = "".join(f"  <url><loc>{SITE_URL}/{'' if fn == 'index.html' else fn[:-5]}</loc></url>\n" for fn, *_ in PAGES if fn != "404.html")
     f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
 with open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8") as f:
     f.write(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n")

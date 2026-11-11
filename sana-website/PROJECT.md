@@ -101,20 +101,55 @@ python3 -m http.server 8000
 
 ## 6. النشر على الدومين (sanatechgroup.net)
 
-1. اعمل مستودع GitHub خاص بالموقع (مثلًا `sana-website`) وانقل فيه فولدر `sana-website/`.
-2. ادخل [vercel.com](https://vercel.com)، اعمل **New Project**، واختار المستودع.
-   - **Root Directory:** `site` (أو `sana-website/site` لو فضل في المستودع ده)
-   - **Framework:** Other، ومن غير build command
-3. في Vercel افتح **Settings ← Domains** وضيف `sanatechgroup.net` و`www.sanatechgroup.net`.
-4. عند الشركة اللي اشتريت منها الدومين، ضيف السجلات اللي Vercel هيعرضها. غالبًا هتكون:
-   - `A` لـ `@` ← `76.76.21.21`
-   - `CNAME` لـ `www` ← `cname.vercel-dns.com`
-5. شهادة HTTPS بتطلع لوحدها. وبعد كده أي تعديل يترفع على GitHub بيتنشر تلقائي.
-6. بعد النشر:
-   - سجّل الموقع في Google Search Console وابعت `sitemap.xml`.
+**الاستضافة:** Cloudflare Pages، وهي مجانية ومسموح فيها بالاستخدام التجاري.
+**الدومين:** متسجّل في Namecheap.
+
+إعدادات المشروع على Cloudflare Pages:
+
+| الإعداد | القيمة |
+|---|---|
+| Repository | `sheryvip/vercel-labs-agent-skills` |
+| Production branch | `claude/website-design-scale-kqln7a` (أو `main` بعد الدمج) |
+| Framework preset | None |
+| Build command | فاضي |
+| Build output directory | `sana-website/site` |
+
+الخطوات:
+
+1. **حساب Cloudflare:** اعمل حساب على [dash.cloudflare.com](https://dash.cloudflare.com/sign-up).
+2. **ضيف الدومين على Cloudflare:**
+   - من الصفحة الرئيسية دوس **Add a domain** (أو Onboard a domain) واكتب `sanatechgroup.net`.
+   - اختار الخطة **Free**.
+   - Cloudflare هيدّيك **2 Nameservers**، مثلًا `xxx.ns.cloudflare.com` و`yyy.ns.cloudflare.com`. انسخهم.
+3. **غيّر الـ Nameservers في Namecheap:**
+   - ادخل Namecheap، وبعدين **Domain List**، وجنب `sanatechgroup.net` دوس **Manage**.
+   - في خانة **Nameservers** اختار **Custom DNS**.
+   - الزق الاتنين بتوع Cloudflare، ودوس ✓ للحفظ.
+   - التفعيل بياخد من دقايق لحد 24 ساعة، وCloudflare هيبعتلك إيميل لما يخلص.
+4. **اربط الموقع:**
+   - في Cloudflare افتح **Workers & Pages**، ودوس **Create**، واختار تبويب **Pages**، وبعدين **Connect to Git** (أو Import an existing Git repository).
+   - اربط GitHub، واختار المستودع، واكتب الإعدادات اللي في الجدول فوق.
+   - دوس **Save and Deploy**. الموقع هيشتغل على رابط مؤقت زي `sana-website.pages.dev`.
+5. **ضيف الدومين للموقع:**
+   - من مشروع Pages افتح **Custom domains** ودوس **Set up a custom domain**.
+   - اكتب `sanatechgroup.net` ودوس **Activate domain**.
+   - كرر نفس الخطوة مع `www.sanatechgroup.net`.
+   - Cloudflare بيعمل سجلات الـ DNS وشهادة HTTPS لوحده، طالما الـ Nameservers اتفعّلوا.
+6. **اتأكد:**
+   - افتح `https://sanatechgroup.net`.
+   - جرّب زرار اللغة وفورم التواصل من الموبايل.
+7. **بعد النشر:**
+   - سجّل الموقع في [Google Search Console](https://search.google.com/search-console) كـ Domain property. التحقق بيتعمل بسجل TXT تضيفه في DNS بتاع Cloudflare.
+   - ابعت `https://sanatechgroup.net/sitemap.xml`.
    - اعمل Google Business Profile بنفس الاسم والعنوان والرقم.
 
-> ملحوظة: خطة Vercel المجانية (Hobby) للاستخدام الشخصي. موقع شركة غالبًا محتاج خطة Pro، فراجع شروطهم الحالية. البديل المجاني لموقع ثابت هو Cloudflare Pages أو Netlify.
+**التحديثات:** أي تعديل يترفع على الفرع اللي اخترته بيتنشر تلقائي خلال دقيقة تقريبًا.
+
+**ملفات خاصة بـ Cloudflare:**
+- `site/_headers`: إعدادات أمان وكاش.
+- Cloudflare بيشيل `.html` من الروابط تلقائي، علشان كده الـ canonical وملف `sitemap.xml` مكتوب فيهم `/about` مش `/about.html`.
+
+> لو الإيميل بتاع الدومين شغّال حاليًا من Namecheap (Private Email أو Email Forwarding): قبل ما تغيّر الـ Nameservers، اتأكد إن سجلات MX وTXT اتنقلت لـ Cloudflare. Cloudflare بينسخها لوحده وقت إضافة الدومين، بس راجعها في صفحة DNS.
 
 ## 7. المرحلة التانية — "جوه" الموقع (لسه متعملتش)
 
@@ -162,7 +197,8 @@ python3 -m http.server 8000
 - [x] بيانات التواصل والدومين، وبيانات الشركة لمحركات البحث (SEO)
 - [x] الفورمات بتبعت على واتساب 01503331435
 - [x] فحص الموقع: 0 أخطاء، 0 تحذيرات
-- [ ] النشر على sanatechgroup.net
+- [x] تجهيز الموقع للنشر على Cloudflare Pages (روابط نظيفة، `_headers`، صفحة 404)
+- [ ] النشر على sanatechgroup.net (خطوات القسم 6)
 - [ ] المرحلة التانية: لوحة التحكم، الحسابات، المتجر، الدفع بـ Paymob
 - [ ] (اختياري لاحقًا) نماذج أعمال حقيقية، صور الفريق والمكتب، الإيميل، السوشيال ميديا
 
@@ -171,5 +207,6 @@ python3 -m http.server 8000
 - الخدمات الستة اقترحها Claude بناءً على "كل ما يخص التكنولوجيا"، وصاحب الشركة يقدر يعدّلها.
 - "أعمالنا" بتعرض أنواع المشاريع بدل مشاريع مفبركة، لحد ما يكون فيه شغل حقيقي يتعرض.
 - الوظائف: مفيش وظائف معلنة، وفيه فورم تقديم عام.
+- الاستضافة: Cloudflare Pages (مجانية وتسمح بالاستخدام التجاري)، والدومين من Namecheap ونقلنا الـ DNS لـ Cloudflare.
 - الموقع حاليًا ثابت (HTML/CSS/JS) ومن غير سيرفر، علشان يتنشر بسرعة وببلاش. المرحلة التانية هتنقله لـ Next.js.
 - الإيميل والسوشيال ومواعيد العمل اتشالوا بطلب صاحب الشركة.
