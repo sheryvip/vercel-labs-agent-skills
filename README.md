@@ -79,6 +79,25 @@ Preview URL: https://skill-deploy-abc123.vercel.app
 Claim URL:   https://vercel.com/claim-deployment?code=...
 ```
 
+### company-website
+
+Design, build, check and launch a bilingual (Arabic RTL / English) company website, from a short brief to a live URL.
+
+**Use when:**
+- "Build a website for my company"
+- "Design a landing page for my business"
+- "اعمل موقع لشركتي"
+- "Launch my company website"
+
+**Features:**
+- Guided intake questions (services, brand color, contact info, main goal)
+- `scaffold.sh` generates a dependency-free static site: hero, services, about, why-us, contact, footer
+- Arabic/English toggle with automatic RTL/LTR, dark mode, mobile menu
+- Contact form that sends to WhatsApp or email, no backend needed
+- SEO basics: Open Graph, JSON-LD, `sitemap.xml`, `robots.txt`, 404 page
+- `check-site.sh` audits SEO, accessibility, broken links and leftover placeholders
+- Deploys with `vercel-deploy-claimable`; launch checklist covers domain, analytics, Search Console
+
 ## Installation
 
 ```bash
