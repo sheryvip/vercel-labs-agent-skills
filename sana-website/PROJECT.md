@@ -12,7 +12,7 @@
 | السلوجان | تقنية تسبق الزمن — Tech Beyond Time |
 | النشاط | تكنولوجيا وخدمات عامة: "بنسهّل التكنولوجيا ونقدّمها لأي حد" |
 | المكان | مدينة الشروق، القاهرة الجديدة، مصر — إدارة كويتية |
-| الدومين | `sanatechgroup.net` |
+| الدومين | `sanatechgroup.online` |
 | تليفون وواتساب | 01503331435 (دوليًا: `+201503331435`) |
 | الدفع أونلاين | مصر بس حاليًا، والبوابة المقترحة Paymob |
 | الإيميل والسوشيال ومواعيد العمل | مش مطلوبين حاليًا |
@@ -99,7 +99,7 @@ python3 -m http.server 8000
 
 وبعدها افتح `http://localhost:8000`.
 
-## 6. النشر على الدومين (sanatechgroup.net)
+## 6. النشر على الدومين (sanatechgroup.online)
 
 **الاستضافة:** Cloudflare Pages، وهي مجانية ومسموح فيها بالاستخدام التجاري.
 **الدومين:** متسجّل في Namecheap.
@@ -118,11 +118,11 @@ python3 -m http.server 8000
 
 1. **حساب Cloudflare:** اعمل حساب على [dash.cloudflare.com](https://dash.cloudflare.com/sign-up).
 2. **ضيف الدومين على Cloudflare:**
-   - من الصفحة الرئيسية دوس **Add a domain** (أو Onboard a domain) واكتب `sanatechgroup.net`.
+   - من الصفحة الرئيسية دوس **Add a domain** (أو Onboard a domain) واكتب `sanatechgroup.online`.
    - اختار الخطة **Free**.
    - Cloudflare هيدّيك **2 Nameservers**، مثلًا `xxx.ns.cloudflare.com` و`yyy.ns.cloudflare.com`. انسخهم.
 3. **غيّر الـ Nameservers في Namecheap:**
-   - ادخل Namecheap، وبعدين **Domain List**، وجنب `sanatechgroup.net` دوس **Manage**.
+   - ادخل Namecheap، وبعدين **Domain List**، وجنب `sanatechgroup.online` دوس **Manage**.
    - في خانة **Nameservers** اختار **Custom DNS**.
    - الزق الاتنين بتوع Cloudflare، ودوس ✓ للحفظ.
    - التفعيل بياخد من دقايق لحد 24 ساعة، وCloudflare هيبعتلك إيميل لما يخلص.
@@ -132,15 +132,15 @@ python3 -m http.server 8000
    - دوس **Save and Deploy**. الموقع هيشتغل على رابط مؤقت زي `sana-website.pages.dev`.
 5. **ضيف الدومين للموقع:**
    - من مشروع Pages افتح **Custom domains** ودوس **Set up a custom domain**.
-   - اكتب `sanatechgroup.net` ودوس **Activate domain**.
-   - كرر نفس الخطوة مع `www.sanatechgroup.net`.
+   - اكتب `sanatechgroup.online` ودوس **Activate domain**.
+   - كرر نفس الخطوة مع `www.sanatechgroup.online`.
    - Cloudflare بيعمل سجلات الـ DNS وشهادة HTTPS لوحده، طالما الـ Nameservers اتفعّلوا.
 6. **اتأكد:**
-   - افتح `https://sanatechgroup.net`.
+   - افتح `https://sanatechgroup.online`.
    - جرّب زرار اللغة وفورم التواصل من الموبايل.
 7. **بعد النشر:**
    - سجّل الموقع في [Google Search Console](https://search.google.com/search-console) كـ Domain property. التحقق بيتعمل بسجل TXT تضيفه في DNS بتاع Cloudflare.
-   - ابعت `https://sanatechgroup.net/sitemap.xml`.
+   - ابعت `https://sanatechgroup.online/sitemap.xml`.
    - اعمل Google Business Profile بنفس الاسم والعنوان والرقم.
 
 **التحديثات:** أي تعديل يترفع على الفرع اللي اخترته بيتنشر تلقائي خلال دقيقة تقريبًا.
@@ -198,7 +198,7 @@ python3 -m http.server 8000
 - [x] الفورمات بتبعت على واتساب 01503331435
 - [x] فحص الموقع: 0 أخطاء، 0 تحذيرات
 - [x] تجهيز الموقع للنشر على Cloudflare Pages (روابط نظيفة، `_headers`، صفحة 404)
-- [ ] النشر على sanatechgroup.net (خطوات القسم 6)
+- [ ] النشر على sanatechgroup.online (خطوات القسم 6)
 - [ ] المرحلة التانية: لوحة التحكم، الحسابات، المتجر، الدفع بـ Paymob
 - [ ] (اختياري لاحقًا) نماذج أعمال حقيقية، صور الفريق والمكتب، الإيميل، السوشيال ميديا
 

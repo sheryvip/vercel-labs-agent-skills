@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sanatechgroup.net/sitemap.xml
+Sitemap: https://sanatechgroup.online/sitemap.xml

@@ -4,7 +4,7 @@
   /* ===== Edit these once you have them ===== */
   var CONFIG = {
     whatsapp: "201503331435", // digits only, with country code
-    email: ""                 // optional fallback, e.g. "info@sanatechgroup.net"
+    email: ""                 // optional fallback, e.g. "info@sanatechgroup.online"
   };
 
   var STORAGE_KEY = "sana-lang";

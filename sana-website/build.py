@@ -3,7 +3,7 @@
 import html, os
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site")
-SITE_URL = "https://sanatechgroup.net"
+SITE_URL = "https://sanatechgroup.online"
 PHONE_DISPLAY = "01503331435"
 PHONE_TEL = "+201503331435"
 WHATSAPP = "201503331435"
