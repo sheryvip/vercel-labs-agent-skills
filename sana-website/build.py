@@ -41,6 +41,10 @@ ICONS = {
     "phone": '<path d="M5 3h4l2 5-2.5 1.5a11 11 0 006 6L16 13l5 2v4a2 2 0 01-2 2A17 17 0 013 5a2 2 0 012-2z"/>',
     "mail": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
     "clock": '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    "moon": '<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>',
+    "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    "send": '<path d="M4 12l16-8-6 16-2.5-6.5z"/>',
+    "close": '<path d="M6 6l12 12M18 6L6 18"/>',
     "chat": '<path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/>',
 }
 
@@ -112,14 +116,18 @@ def header(active):
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="index.html" aria-label="Sana Technology">
-      <img src="assets/logo.png" alt="Sana Technology" width="126" height="44">
+      <img class="logo-light-bg" src="assets/logo.png" alt="Sana Technology" width="126" height="44">
+      <img class="logo-dark-bg" src="assets/logo-light.png" alt="Sana Technology" width="126" height="44">
     </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
       <span class="visually-hidden" data-ar="القائمة" data-en="Menu">القائمة</span><span class="menu-bar" aria-hidden="true"></span>
     </button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
 {links}
-      <button class="lang-toggle" type="button" data-ar="EN" data-en="ع" aria-label="Switch language">EN</button>
+      <div class="nav-tools">
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="الوضع الليلي / Dark mode">{icon("moon")}{icon("sun")}</button>
+        <button class="lang-toggle" type="button" data-ar="EN" data-en="ع" aria-label="Switch language">EN</button>
+      </div>
       <a class="btn btn-primary btn-sm" href="contact.html"{CUR if active == "contact.html" else ""} data-ar="تواصل معنا" data-en="Contact us">تواصل معنا</a>
     </nav>
   </div>
@@ -133,7 +141,7 @@ def footer():
     return f'''<footer class="site-footer">
   <div class="container footer-grid">
     <div>
-      <p class="footer-brand">Sana <span>Technology</span></p>
+      <p class="footer-brand">Sana <button class="egg" type="button" aria-label="✦">✦</button><span>Technology</span></p>
       {t("p", "تقنية تسبق الزمن — بنسهّل التكنولوجيا ونقدّمها لأي حد.", "Tech Beyond Time — making technology simple and available to everyone.", 'class="footer-tag"')}
     </div>
     <nav aria-label="Footer">
@@ -170,7 +178,9 @@ def page(filename, title_ar, title_en, desc, body):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{e(title)}</title>
   <meta name="description" content="{e(desc)}">
-  <meta name="theme-color" content="#5b2a86">
+  <meta name="theme-color" content="#fcfaff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#120c1f" media="(prefers-color-scheme: dark)">
+  <script>(function(){{try{{var t=localStorage.getItem("sana-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}}catch(e){{}}}})();</script>
   <link rel="canonical" href="{canonical}">
   <link rel="icon" href="favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -186,11 +196,14 @@ def page(filename, title_ar, title_en, desc, body):
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"Organization","name":"Sana Technology","alternateName":"سنآ","url":"{SITE_URL}","logo":"{SITE_URL}/assets/logo.png","telephone":"{PHONE_TEL}","address":{{"@type":"PostalAddress","addressLocality":"El Shorouk City","addressRegion":"Cairo","addressCountry":"EG"}}}}</script>
 </head>
 <body data-page="{filename}">
+<div class="scroll-progress" aria-hidden="true"></div>
 {header(filename)}
 <main id="main">
 {body}
 </main>
 {footer()}
+{chat_widget()}
+<div class="toast" role="status" hidden></div>
 <script src="script.js" defer></script>
 </body>
 </html>
@@ -267,6 +280,153 @@ def form(form_id, kind, fields, submit_ar, submit_en):
       </form>'''
 
 
+
+def chat_widget():
+    return f'''<button class="chat-fab" type="button" aria-controls="chat" aria-expanded="false">
+  {icon("chat")}<span data-ar="اسأل مساعد سنآ" data-en="Ask Sana Assistant">اسأل مساعد سنآ</span>
+</button>
+<section class="chat" id="chat" hidden aria-labelledby="chat-title">
+  <div class="chat-head">
+    <div>
+      <p class="chat-title" id="chat-title"><span data-ar="مساعد سنآ" data-en="Sana Assistant">مساعد سنآ</span> <span aria-hidden="true">✦</span></p>
+      <p class="chat-sub" data-ar="قولّي محتاج إيه وأنا أرشّحلك الحل" data-en="Tell me what you need and I will suggest a solution">قولّي محتاج إيه وأنا أرشّحلك الحل</p>
+    </div>
+    <button class="chat-close" type="button" aria-label="إغلاق / Close">{icon("close")}</button>
+  </div>
+  <div class="chat-log" role="log" aria-live="polite"></div>
+  <div class="chat-chips"></div>
+  <form class="chat-form">
+    <label class="visually-hidden" for="chat-input" data-ar="رسالتك" data-en="Your message">رسالتك</label>
+    <input id="chat-input" name="message" autocomplete="off" maxlength="1200" data-ph-ar="اكتب سؤالك هنا…" data-ph-en="Type your question…" placeholder="اكتب سؤالك هنا…">
+    <button class="chat-send" type="submit" aria-label="إرسال / Send">{icon("send")}</button>
+  </form>
+  <a class="chat-wa" href="https://wa.me/{WHATSAPP}" target="_blank" rel="noopener" data-ar="كمّل المحادثة على واتساب" data-en="Continue on WhatsApp">كمّل المحادثة على واتساب</a>
+</section>'''
+
+
+QUIZ = [
+    ("business", "نوع نشاطك إيه؟", "What kind of business do you run?", [
+        ("shop", "محل أو تجارة", "Shop or trading"), ("food", "مطعم أو كافيه", "Restaurant or café"),
+        ("services", "شركة خدمات", "Service company"), ("clinic", "عيادة أو مركز طبي", "Clinic or medical center"),
+        ("factory", "مصنع أو مخزن", "Factory or warehouse"), ("online", "بيزنس أونلاين أو براند", "Online business or brand")]),
+    ("size", "فريقك كام شخص؟", "How big is your team?", [
+        ("s", "1 – 5", "1 – 5"), ("m", "6 – 20", "6 – 20"), ("l", "21 – 50", "21 – 50"), ("xl", "أكتر من 50", "More than 50")]),
+    ("challenge", "إيه أكبر تحدي عندك دلوقتي؟", "What is your biggest challenge right now?", [
+        ("online", "مفيش وجود أونلاين والعملاء قليلين", "No online presence, too few customers"),
+        ("messages", "الرسايل والطلبات كتير ومش ملحقين", "Too many messages and orders to keep up"),
+        ("stock", "المخزون والحسابات ملخبطة", "Inventory and accounts are a mess"),
+        ("it", "الأجهزة أو الشبكة بتقع كتير", "Devices or the network keep failing"),
+        ("unsure", "مش عارف أبدأ منين", "Not sure where to start")]),
+    ("priority", "إيه الأهم ليك؟", "What matters most to you?", [
+        ("fast", "أسرع حل", "The fastest fix"), ("budget", "أوفر حل", "The most affordable option"),
+        ("scale", "حل قوي يكبر معايا", "A strong solution that grows with me")]),
+]
+
+
+def quiz_section():
+    steps = []
+    for i, (name, qar, qen, opts) in enumerate(QUIZ):
+        radios = "".join(
+            f'<label class="opt"><input type="radio" name="{name}" value="{v}" required><span data-ar="{e(a)}" data-en="{e(b)}">{e(a)}</span></label>'
+            for v, a, b in opts)
+        steps.append(f'''<fieldset class="quiz-step" data-step="{i}">
+          <legend><span class="quiz-count">{i + 1} / {len(QUIZ)}</span> <span data-ar="{e(qar)}" data-en="{e(qen)}">{e(qar)}</span></legend>
+          <div class="opts">{radios}</div>
+        </fieldset>''')
+    return f'''<section class="section section-soft" id="plan">
+  <div class="container">
+    <div class="section-head">
+      {t("p", "اعرف حلّك", "Find your solution", 'class="kicker"')}
+      {t("h2", "اعرف حلّك التقني في 60 ثانية", "Find your tech solution in 60 seconds")}
+      {t("p", "4 أسئلة سريعة، وفي الآخر هتطلعلك خطة مقترحة تناسب شغلك.", "Four quick questions, then you get a suggested plan for your business.", 'class="section-sub"')}
+    </div>
+    <div class="quiz">
+      <div class="quiz-bar" aria-hidden="true"><span></span></div>
+      <form id="quiz-form" novalidate>
+        {"".join(steps)}
+        <div class="quiz-nav">
+          {t("button", "السابق", "Back", 'class="btn btn-ghost btn-sm" type="button" data-quiz="back"')}
+          {t("button", "التالي", "Next", 'class="btn btn-primary btn-sm" type="button" data-quiz="next"')}
+          {t("button", "اعرض خطتي", "Show my plan", 'class="btn btn-primary btn-sm" type="submit" data-quiz="done"')}
+        </div>
+        <p class="form-msg error" role="alert" hidden></p>
+      </form>
+      <div class="quiz-result" tabindex="-1" hidden></div>
+    </div>
+  </div>
+</section>'''
+
+
+def before_after_section():
+    before = [("دفتر طلبات بخط الإيد", "Orders written in a notebook"),
+              ("شيت Excel بـ 5 نسخ مختلفة", "An Excel sheet in 5 different versions"),
+              ("37 رسالة واتساب مستنية رد", "37 WhatsApp messages waiting for a reply"),
+              ("جرد المخزن بالإيد كل أسبوع", "Counting stock by hand every week"),
+              ("مش عارف كسبت كام الشهر ده", "No idea how much you earned this month")]
+    notes = "".join(f'<li class="note n{i}" data-ar="{e(a)}" data-en="{e(b)}">{e(a)}</li>' for i, (a, b) in enumerate(before))
+    bars = "".join(f'<span style="--h:{h}%"></span>' for h in (42, 58, 51, 70, 64, 86, 78))
+    return f'''<section class="section" id="before-after">
+  <div class="container">
+    <div class="section-head">
+      {t("p", "قبل وبعد", "Before & after", 'class="kicker"')}
+      {t("h2", "شوف الفرق بنفسك", "See the difference yourself")}
+      {t("p", "اسحب الخط يمين وشمال علشان تقارن شغلك قبل سنآ وبعدها.", "Drag the line left and right to compare your work before and after Sana.", 'class="section-sub"')}
+    </div>
+    <div class="ba" style="--pos:50%">
+      <div class="ba-pane ba-before">
+        {t("p", "قبل سنآ", "Before Sana", 'class="ba-label"')}
+        <ul class="notes">{notes}</ul>
+      </div>
+      <div class="ba-pane ba-after">
+        {t("p", "بعد سنآ", "With Sana", 'class="ba-label"')}
+        <div class="dash">
+          <div class="kpi"><span data-ar="طلبات النهارده" data-en="Orders today">طلبات النهارده</span><strong>48</strong></div>
+          <div class="kpi"><span data-ar="وقت الرد" data-en="Reply time">وقت الرد</span><strong data-ar="أقل من دقيقة" data-en="Under a minute">أقل من دقيقة</strong></div>
+          <div class="kpi"><span data-ar="المخزون" data-en="Inventory">المخزون</span><strong data-ar="محدّث لحظيًا" data-en="Live">محدّث لحظيًا</strong></div>
+          <div class="chart"><span class="chart-label" data-ar="مبيعات الأسبوع" data-en="This week's sales">مبيعات الأسبوع</span><div class="bars">{bars}</div></div>
+        </div>
+      </div>
+      <div class="ba-handle" aria-hidden="true"><span>⟷</span></div>
+      <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="قارن قبل وبعد / Compare before and after">
+    </div>
+    {t("p", "مثال توضيحي لشكل الشغل بعد نظام إدارة وبوت رد آلي.", "Illustrative example of work after a management system and an auto-reply bot.", 'class="ba-note"')}
+  </div>
+</section>'''
+
+
+def calc_field(fid, ar, en, lo, hi, step, val, unit_ar, unit_en):
+    return f'''<div class="calc-field">
+        <label for="{fid}"><span data-ar="{e(ar)}" data-en="{e(en)}">{e(ar)}</span>
+          <output for="{fid}" class="calc-val"><bdi>{val}</bdi> <span data-ar="{e(unit_ar)}" data-en="{e(unit_en)}">{e(unit_ar)}</span></output></label>
+        <input id="{fid}" type="range" min="{lo}" max="{hi}" step="{step}" value="{val}">
+      </div>'''
+
+
+def calculator_section():
+    return f'''<section class="section section-soft" id="calculator">
+  <div class="container">
+    <div class="section-head">
+      {t("p", "حاسبة التوفير", "Savings calculator", 'class="kicker"')}
+      {t("h2", "احسب هتوفّر كام مع الأتمتة", "See what automation could save you")}
+      {t("p", "حرّك الأرقام حسب شغلك، والحاسبة هتطلعلك تقدير للوقت والفلوس اللي بتضيع في الشغل اليدوي المتكرر.", "Adjust the numbers to match your business and get an estimate of the time and money lost to repetitive manual work.", 'class="section-sub"')}
+    </div>
+    <div class="calc">
+      <form class="calc-inputs" id="calc-form" onsubmit="return false">
+        {calc_field("calc-emp", "عدد الموظفين اللي بيعملوا شغل متكرر", "Employees doing repetitive work", 1, 100, 1, 5, "موظف", "people")}
+        {calc_field("calc-hours", "ساعات الشغل المتكرر لكل موظف في اليوم", "Repetitive hours per employee per day", 0.5, 8, 0.5, 3, "ساعة", "hours")}
+        {calc_field("calc-salary", "متوسط المرتب الشهري", "Average monthly salary", 3000, 60000, 500, 10000, "جنيه", "EGP")}
+      </form>
+      <div class="calc-out" aria-live="polite">
+        <div class="stat"><span data-ar="ساعات بتتوفّر في الشهر" data-en="Hours saved per month">ساعات بتتوفّر في الشهر</span><strong id="out-hours">156</strong></div>
+        <div class="stat"><span data-ar="توفير شهري تقريبي" data-en="Approx. monthly saving">توفير شهري تقريبي</span><strong id="out-month">8,864</strong></div>
+        <div class="stat stat-main"><span data-ar="توفير في السنة" data-en="Saving per year">توفير في السنة</span><strong id="out-year">106,364</strong></div>
+        {t("p", "تقدير تقريبي: بنفترض 26 يوم شغل في الشهر، و176 ساعة شغل للموظف، وإن الأتمتة بتوفّر حوالي 40% من الوقت المتكرر. الأرقام الحقيقية بتختلف حسب نشاطك.", "Rough estimate: assumes 26 working days a month, 176 working hours per employee, and that automation saves about 40% of repetitive time. Real numbers depend on your business.", 'class="calc-note"')}
+        {t("a", "اطلب خطة أتمتة لشغلك", "Get an automation plan", 'class="btn btn-primary" href="contact.html?service=system"')}
+      </div>
+    </div>
+  </div>
+</section>'''
+
 # ---------------- Pages ----------------
 
 home = f'''<section class="hero">
@@ -277,10 +437,10 @@ home = f'''<section class="hero">
       {t("p", "في سنآ بنسهّل التكنولوجيا ونقدّمها لأي حد — من الفكرة، للتنفيذ، للتشغيل والدعم.", "At Sana we make technology simple and bring it to everyone — from idea, to build, to running and support.", 'class="lead"')}
       <div class="hero-actions">
         {t("a", "اطلب استشارة", "Request a consultation", 'class="btn btn-primary" href="contact.html"')}
-        {t("a", "استكشف خدماتنا", "Explore our services", 'class="btn btn-ghost" href="services.html"')}
+        {t("a", "اعرف حلّك في 60 ثانية", "Find your solution in 60s", 'class="btn btn-ghost" href="#plan"')}
       </div>
     </div>
-    <div class="hero-art" aria-hidden="true">
+    <div class="hero-art egg-target" aria-hidden="true">
       <div class="orb"></div>
       <img src="assets/mark.png" alt="" width="260" height="260">
       <span class="spark s1">✦</span><span class="spark s2">✦</span><span class="spark s3">✦</span>
@@ -300,7 +460,9 @@ home = f'''<section class="hero">
   </div>
 </section>
 
-<section class="section section-soft">
+{quiz_section()}
+
+<section class="section">
   <div class="container">
     <div class="section-head">
       {t("p", "ليه سنآ؟", "Why Sana?", 'class="kicker"')}
@@ -314,6 +476,8 @@ home = f'''<section class="hero">
     </ul>
   </div>
 </section>
+
+{before_after_section()}
 
 <section class="section">
   <div class="container">
@@ -378,6 +542,7 @@ services = page_hero("خدماتنا", "Services", "كل اللي يخص الت�
     {"".join(svc_detail)}
   </div>
 </section>
+{calculator_section()}
 {cta_band()}'''
 
 WORK_TYPES = [

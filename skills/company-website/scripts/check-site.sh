@@ -43,7 +43,7 @@ class Page(HTMLParser):
         self.html_attrs, self.ids, self.links = {}, set(), []
         self.title, self.in_title = "", False
         self.meta, self.imgs, self.h1 = {}, [], 0
-        self.labels_for, self.inputs = set(), []
+        self.labels_for, self.inputs, self.label_depth = set(), [], 0
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         line = self.getpos()[0]
@@ -55,13 +55,17 @@ class Page(HTMLParser):
             if key: self.meta[key] = a.get("content", "")
         elif tag == "img": self.imgs.append((a, line))
         elif tag == "h1": self.h1 += 1
-        elif tag == "label" and a.get("for"): self.labels_for.add(a["for"])
+        elif tag == "label":
+            self.label_depth += 1
+            if a.get("for"): self.labels_for.add(a["for"])
         elif tag in ("input", "textarea", "select") and a.get("type") not in ("hidden", "submit", "button"):
-            self.inputs.append((a, line))
+            if self.label_depth == 0:  # a field nested inside <label> is already labelled
+                self.inputs.append((a, line))
         for attr in ("href", "src"):
             if a.get(attr): self.links.append((a[attr], line))
     def handle_endtag(self, tag):
         if tag == "title": self.in_title = False
+        elif tag == "label" and self.label_depth: self.label_depth -= 1
     def handle_data(self, data):
         if self.in_title: self.title += data
 
