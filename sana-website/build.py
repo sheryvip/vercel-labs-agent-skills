@@ -22,6 +22,7 @@ NAV = [
     ("services.html", "خدماتنا", "Services"),
     ("work.html", "أعمالنا", "Our work"),
     ("store.html", "متجرنا", "Store"),
+    ("news.html", "أخبار التقنية", "Tech news"),
     ("careers.html", "الوظائف", "Careers"),
     ("contact.html", "تواصل معنا", "Contact"),
 ]
@@ -45,6 +46,8 @@ ICONS = {
     "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     "send": '<path d="M4 12l16-8-6 16-2.5-6.5z"/>',
     "close": '<path d="M6 6l12 12M18 6L6 18"/>',
+    "news": '<path d="M4 5h13v14H6a2 2 0 01-2-2z"/><path d="M17 8h3v9a2 2 0 01-2 2"/><path d="M7 9h7M7 12h7M7 15h4"/>',
+    "external": '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>',
     "chat": '<path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/>',
 }
 
@@ -116,8 +119,8 @@ def header(active):
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="index.html" aria-label="Sana Technology">
-      <img class="logo-light-bg" src="assets/logo.png" alt="Sana Technology" width="126" height="44">
-      <img class="logo-dark-bg" src="assets/logo-light.png" alt="Sana Technology" width="126" height="44">
+      <img class="logo-light-bg" src="assets/logo.png" alt="Sana Technology" width="146" height="44">
+      <img class="logo-dark-bg" src="assets/logo-light.png" alt="Sana Technology" width="146" height="44">
     </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
       <span class="visually-hidden" data-ar="القائمة" data-en="Menu">القائمة</span><span class="menu-bar" aria-hidden="true"></span>
@@ -427,6 +430,41 @@ def calculator_section():
   </div>
 </section>'''
 
+
+# Keep in sync with worker/src/news.js (FEEDS)
+NEWS_SOURCES = [
+    ("MIT Technology Review", "https://www.technologyreview.com"), ("The Verge", "https://www.theverge.com"),
+    ("TechCrunch", "https://techcrunch.com"), ("Ars Technica", "https://arstechnica.com"), ("WIRED", "https://www.wired.com"),
+    ("IEEE Spectrum", "https://spectrum.ieee.org"), ("BBC News", "https://www.bbc.com/news/technology"),
+    ("BBC عربي", "https://www.bbc.com/arabic/science-and-tech"), ("البوابة العربية للأخبار التقنية", "https://aitnews.com"),
+    ("عالم التقنية", "https://www.tech-wd.com"),
+]
+
+
+def news_body():
+    filters = [("all", "الكل", "All"), ("ai", "الذكاء الاصطناعي", "AI"), ("ar", "بالعربي", "Arabic"), ("en", "بالإنجليزي", "English")]
+    btns = "".join(f'<button class="nf" type="button" data-filter="{k}" aria-pressed="{str(k == "all").lower()}" data-ar="{e(a)}" data-en="{e(b)}">{e(a)}</button>' for k, a, b in filters)
+    skeleton = "".join('<article class="news-card skeleton" aria-hidden="true"><div class="nc-img"></div><div class="nc-body"><span></span><span></span><span></span></div></article>' for _ in range(6))
+    srcs = "".join(f'<li><a href="{u}" target="_blank" rel="noopener noreferrer">{e(n)}</a></li>' for n, u in NEWS_SOURCES)
+    return page_hero("أخبار التقنية", "Tech news", "آخر أخبار التكنولوجيا والذكاء الاصطناعي", "The latest in tech and AI",
+                     "أهم الأخبار من مصادر عالمية وعربية موثوقة، بتتحدّث لوحدها كل ربع ساعة. كل خبر معاه رابط المصدر الأصلي.",
+                     "Top stories from trusted global and Arabic outlets, refreshed automatically every 15 minutes. Every story links to its original source.") + f'''
+<section class="section news-section">
+  <div class="container">
+    <div class="news-bar">
+      <div class="news-filters" role="group" aria-label="فلترة الأخبار / Filter news">{btns}</div>
+      <p class="news-updated" aria-live="polite"></p>
+    </div>
+    <div class="news-grid" id="news-grid" aria-busy="true">{skeleton}</div>
+    <p class="news-empty" hidden></p>
+    <div class="news-sources">
+      {t("h2", "مصادرنا", "Our sources")}
+      <ul>{srcs}</ul>
+      {t("p", "بنعرض عنوان الخبر وملخص قصير بس، والخبر كامل عند مصدره. حقوق الأخبار لأصحابها.", "We show only the headline and a short summary; the full story lives with its source. All rights belong to the publishers.", 'class="muted"')}
+    </div>
+  </div>
+</section>'''
+
 # ---------------- Pages ----------------
 
 home = f'''<section class="hero">
@@ -646,6 +684,7 @@ PAGES = [
     ("services.html", "خدماتنا", "Services", "خدمات سنآ: مواقع ومتاجر، تطبيقات، أنظمة ERP و CRM، ذكاء اصطناعي وبوتات، دعم فني وشبكات، واستشارات.", services),
     ("work.html", "أعمالنا", "Our work", "نماذج من مشاريع سنآ للتكنولوجيا.", work),
     ("store.html", "متجرنا", "Store", "متجر سنآ قريبًا: نظام سنآ، Sana AI Agent، وبوتات جاهزة.", store),
+    ("news.html", "أخبار التقنية", "Tech news", "آخر أخبار التكنولوجيا والذكاء الاصطناعي من مصادر موثوقة زي MIT Technology Review وThe Verge وBBC، بتتحدّث تلقائيًا.", news_body()),
     ("careers.html", "الوظائف", "Careers", "الوظائف المتاحة في سنآ للتكنولوجيا — انضم لفريقنا.", careers),
     ("contact.html", "تواصل معنا", "Contact", "تواصل مع سنآ للتكنولوجيا في مدينة الشروق — اطلب خدمتك أو استشارتك.", contact),
     ("404.html", "غير موجودة", "Not found", "الصفحة غير موجودة.", notfound),

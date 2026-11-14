@@ -5,9 +5,11 @@
   var CONFIG = {
     whatsapp: "201503331435", // digits only, with country code
     email: "",                // optional fallback, e.g. "info@sanatechgroup.online"
-    chatEndpoint: ""          // Sana Assistant Worker URL, e.g. "https://sana-chat.<your-subdomain>.workers.dev"
-                              // Empty = guided assistant without AI (still useful, sends to WhatsApp)
+    workerUrl: ""             // Sana Worker URL, e.g. "https://sana-chat.<your-subdomain>.workers.dev"
+                              // Powers the AI assistant (/chat) and the live news page (/news).
+                              // Empty = guided assistant without AI, and news from news.json if present.
   };
+  function workerRoute(path) { return CONFIG.workerUrl ? CONFIG.workerUrl.replace(/\/+$/, "") + path : ""; }
 
   var root = document.documentElement;
   root.classList.add("js");
@@ -366,11 +368,11 @@
       chips.innerHTML = "";
       if (history.length && history[history.length - 1].role === "user") history.pop();
       history.push({ role: "user", content: text });
-      if (!CONFIG.chatEndpoint || forcedKey) { scriptedReply(text, forcedKey); return; }
+      if (!CONFIG.workerUrl || forcedKey) { scriptedReply(text, forcedKey); return; }
 
       busy = true;
       var typing = addMsg("bot typing", "…");
-      fetch(CONFIG.chatEndpoint, {
+      fetch(workerRoute("/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lang: lang(), messages: history.filter(function (m, i) { return i > 0 || m.role === "user"; }) })
@@ -414,6 +416,106 @@
       input.value = ""; userSays(v.slice(0, 1200));
     });
     window.SanaChat = { open: openChat };
+  }
+
+
+  /* ===== Tech news page ===== */
+  var newsGrid = document.getElementById("news-grid");
+  if (newsGrid) {
+    var newsData = null, newsFilter = "all";
+    var updatedEl = $(".news-updated"), emptyEl = $(".news-empty");
+    var SVG_OPEN = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">';
+    var NEWS_ICON = SVG_OPEN + '<path d="M4 5h13v14H6a2 2 0 01-2-2z"/><path d="M17 8h3v9a2 2 0 01-2 2"/><path d="M7 9h7M7 12h7M7 15h4"/></svg>';
+    var EXT_ICON = SVG_OPEN + '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>';
+    function ago(iso) {
+      if (!iso) return "";
+      var sec = (Date.parse(iso) - Date.now()) / 1000, abs = Math.abs(sec);
+      var rtf = new Intl.RelativeTimeFormat(lang() === "en" ? "en" : "ar", { numeric: "auto" });
+      if (abs < 3600) return rtf.format(Math.round(sec / 60) || -1, "minute");
+      if (abs < 86400) return rtf.format(Math.round(sec / 3600), "hour");
+      return rtf.format(Math.round(sec / 86400), "day");
+    }
+    function safeUrl(u) {
+      try { var x = new URL(u); return x.protocol === "https:" || x.protocol === "http:" ? x.href : ""; } catch (e) { return ""; }
+    }
+    function card(it, srcName) {
+      var link = safeUrl(it.link); if (!link) return null;
+      var a = document.createElement("article");
+      a.className = "news-card";
+      a.setAttribute("dir", it.lang === "ar" ? "rtl" : "ltr");
+      a.setAttribute("lang", it.lang === "ar" ? "ar" : "en");
+      var img = document.createElement("div"); img.className = "nc-img";
+      var src = safeUrl(it.image || "");
+      if (src) {
+        var im = document.createElement("img");
+        im.src = src; im.alt = ""; im.loading = "lazy"; im.decoding = "async"; im.referrerPolicy = "no-referrer";
+        im.addEventListener("error", function () { img.innerHTML = NEWS_ICON; });
+        img.appendChild(im);
+      } else { img.innerHTML = NEWS_ICON; }
+      var body = document.createElement("div"); body.className = "nc-body";
+      var meta = document.createElement("div"); meta.className = "nc-meta";
+      var s = document.createElement("span"); s.className = "nc-src"; s.textContent = srcName; meta.appendChild(s);
+      var tm = document.createElement("time");
+      if (it.date) { tm.dateTime = it.date; tm.textContent = ago(it.date); }
+      meta.appendChild(tm);
+      if (it.ai) { var ai = document.createElement("span"); ai.className = "nc-ai"; ai.textContent = "AI"; meta.appendChild(ai); }
+      var h = document.createElement("h3"), ha = document.createElement("a");
+      ha.href = link; ha.target = "_blank"; ha.rel = "noopener noreferrer"; ha.textContent = it.title; h.appendChild(ha);
+      body.appendChild(meta); body.appendChild(h);
+      if (it.summary) { var p = document.createElement("p"); p.textContent = it.summary; body.appendChild(p); }
+      var more = document.createElement("a");
+      more.className = "nc-more"; more.href = link; more.target = "_blank"; more.rel = "noopener noreferrer";
+      more.setAttribute("dir", lang() === "ar" ? "rtl" : "ltr");
+      more.innerHTML = EXT_ICON;
+      more.appendChild(document.createTextNode(L("اقرأ الخبر من ", "Read on ") + srcName));
+      body.appendChild(more);
+      a.appendChild(img); a.appendChild(body);
+      return a;
+    }
+    function renderNews() {
+      if (!newsData) return;
+      var names = {};
+      (newsData.sources || []).forEach(function (x) { names[x.id] = x.name; });
+      var list = (newsData.items || []).filter(function (it) {
+        return newsFilter === "all" || (newsFilter === "ai" ? it.ai : it.lang === newsFilter);
+      });
+      newsGrid.innerHTML = "";
+      list.forEach(function (it) { var c = card(it, names[it.source] || ""); if (c) newsGrid.appendChild(c); });
+      newsGrid.setAttribute("aria-busy", "false");
+      emptyEl.hidden = list.length > 0;
+      if (!list.length) emptyEl.textContent = L("مفيش أخبار في القسم ده دلوقتي. جرّب فلتر تاني.", "No stories in this section right now. Try another filter.");
+      updatedEl.textContent = L("آخر تحديث: ", "Last updated: ") + ago(newsData.updated);
+    }
+    function newsUnavailable() {
+      newsGrid.innerHTML = ""; newsGrid.setAttribute("aria-busy", "false"); updatedEl.textContent = "";
+      emptyEl.hidden = false;
+      emptyEl.textContent = L("الأخبار هتظهر هنا تلقائيًا أول ما خدمة الأخبار تشتغل. لحد كده تقدر تتابع مصادرنا مباشرة من الروابط اللي تحت.",
+        "Stories will appear here automatically once the news service is live. Until then, follow our sources directly from the links below.");
+    }
+    function loadNews(url) {
+      return fetch(url, { headers: { Accept: "application/json" } }).then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }).then(function (d) {
+        if (!d || !d.items || !d.items.length) throw new Error("empty");
+        return d;
+      });
+    }
+    var liveNews = workerRoute("/news");
+    (liveNews ? loadNews(liveNews).catch(function () { return loadNews("news.json"); }) : loadNews("news.json"))
+      .then(function (d) { newsData = d; renderNews(); })
+      .catch(newsUnavailable);
+    $$(".nf").forEach(function (b) {
+      b.addEventListener("click", function () {
+        newsFilter = b.dataset.filter;
+        $$(".nf").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        renderNews();
+      });
+    });
+    langListeners.push(function () {
+      if (newsData) renderNews();
+      else if (!emptyEl.hidden) newsUnavailable();
+    });
   }
 
   /* ===== Easter egg: tap the ✦ five times ===== */

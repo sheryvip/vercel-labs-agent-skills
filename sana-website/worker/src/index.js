@@ -1,6 +1,12 @@
-// Sana Assistant: Cloudflare Worker that answers website visitors with Claude.
-// The API key lives only here (Worker secret ANTHROPIC_API_KEY), never in the website.
+// Sana Worker for the website:
+//   POST /chat  Sana Assistant: answers visitors with Claude. The API key lives only here
+//               (Worker secret ANTHROPIC_API_KEY), never in the website.
+//   GET  /news  Tech & AI news collected from trusted outlets' RSS feeds (no key needed).
 import Anthropic from "@anthropic-ai/sdk";
+import { collectNews } from "./news.js";
+
+const NEWS_TTL_MS = 15 * 60 * 1000;
+let newsMemo = null; // { at, body } kept while this Worker instance is warm
 
 const ALLOWED_ORIGINS = [
   "https://sanatechgroup.online",
@@ -42,7 +48,7 @@ function corsHeaders(origin) {
   const allowed = ALLOWED_ORIGINS.includes(origin) || PAGES_DEV.test(origin);
   return {
     "Access-Control-Allow-Origin": allowed ? origin : ALLOWED_ORIGINS[0],
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
@@ -69,13 +75,40 @@ function cleanMessages(input) {
   return msgs;
 }
 
+async function handleNews(request, origin, ctx) {
+  const now = Date.now();
+  let body = newsMemo && now - newsMemo.at < NEWS_TTL_MS ? newsMemo.body : null;
+  const cache = typeof caches !== "undefined" ? caches.default : null;
+  const cacheKey = new Request(new URL("/news-cache-v1", request.url).href);
+  if (!body && cache) {
+    const hit = await cache.match(cacheKey);
+    if (hit) body = await hit.text();
+  }
+  if (!body) {
+    body = JSON.stringify(await collectNews(fetch, now));
+    newsMemo = { at: now, body };
+    if (cache) {
+      const put = cache.put(cacheKey, new Response(body, { headers: { "Cache-Control": `public, max-age=${NEWS_TTL_MS / 1000}` } }));
+      if (ctx && ctx.waitUntil) ctx.waitUntil(put); else await put;
+    }
+  }
+  return new Response(body, {
+    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=300", ...corsHeaders(origin) },
+  });
+}
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const origin = request.headers.get("Origin") || "";
     const allowed = ALLOWED_ORIGINS.includes(origin) || PAGES_DEV.test(origin);
+    const path = new URL(request.url).pathname.replace(/\/+$/, "");
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders(origin) });
-    if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405, origin);
+    if (request.method === "GET" && path === "/news") {
+      if (origin && !allowed) return json({ error: "origin_not_allowed" }, 403, origin);
+      return handleNews(request, origin, ctx);
+    }
+    if (request.method !== "POST" || (path !== "" && path !== "/chat")) return json({ error: "not_found" }, 404, origin);
     if (!allowed) return json({ error: "origin_not_allowed" }, 403, origin);
     if (!env.ANTHROPIC_API_KEY) return json({ error: "not_configured" }, 503, origin);
 
