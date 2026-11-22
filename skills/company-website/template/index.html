@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="{{DEFAULT_LANG}}" dir="{{DIR}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{NAME}} | {{TAGLINE}}</title>
+  <meta name="description" content="{{TAGLINE}}. {{TAGLINE_AR}}">
+  <meta name="theme-color" content="{{PRIMARY_COLOR}}">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="{{SITE_URL}}/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{NAME}}">
+  <meta property="og:description" content="{{TAGLINE}}">
+  <meta property="og:url" content="{{SITE_URL}}/">
+  <meta property="og:image" content="{{SITE_URL}}/og-image.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Inter:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <style>:root { --brand: {{PRIMARY_COLOR}}; }</style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{{NAME}}",
+    "alternateName": "{{NAME_AR}}",
+    "url": "{{SITE_URL}}",
+    "telephone": "{{PHONE}}",
+    "email": "{{EMAIL}}",
+    "address": "{{ADDRESS}}"
+  }
+  </script>
+</head>
+<body data-whatsapp="{{WHATSAPP}}" data-email="{{EMAIL}}">
+  <a class="skip-link" href="#main" data-ar="تخطَّ إلى المحتوى" data-en="Skip to content">تخطَّ إلى المحتوى</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="#top" data-ar="{{NAME_AR}}" data-en="{{NAME}}">{{NAME_AR}}</a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="visually-hidden" data-ar="القائمة" data-en="Menu">القائمة</span>
+        <span class="menu-bar" aria-hidden="true"></span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a href="#services" data-ar="خدماتنا" data-en="Services">خدماتنا</a>
+        <a href="#about" data-ar="من نحن" data-en="About">من نحن</a>
+        <a href="#why" data-ar="لماذا نحن" data-en="Why us">لماذا نحن</a>
+        <a href="#contact" data-ar="تواصل معنا" data-en="Contact">تواصل معنا</a>
+        <button class="lang-toggle" type="button" data-ar="English" data-en="العربية">English</button>
+        <a class="btn btn-primary btn-sm" href="#contact" data-ar="اطلب عرض سعر" data-en="Get a quote">اطلب عرض سعر</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="container hero-inner">
+        <h1 data-ar="{{TAGLINE_AR}}" data-en="{{TAGLINE}}">{{TAGLINE_AR}}</h1>
+        <p class="lead"
+           data-ar="[ADD جملة أو جملتان: من تخدم وماذا تقدّم]"
+           data-en="[ADD one or two lines: who you serve and what you do]">[ADD جملة أو جملتان: من تخدم وماذا تقدّم]</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#contact" data-ar="تواصل معنا الآن" data-en="Contact us now">تواصل معنا الآن</a>
+          <a class="btn btn-ghost" href="#services" data-ar="تعرّف على خدماتنا" data-en="Explore our services">تعرّف على خدماتنا</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="section">
+      <div class="container">
+        <h2 data-ar="خدماتنا" data-en="Our services">خدماتنا</h2>
+        <div class="grid">
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">◆</div>
+            <h3 data-ar="[ADD الخدمة الأولى]" data-en="[ADD Service one]">[ADD الخدمة الأولى]</h3>
+            <p data-ar="[ADD فائدة الخدمة للعميل في جملة واحدة]" data-en="[ADD One-sentence customer benefit]">[ADD فائدة الخدمة للعميل في جملة واحدة]</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">◆</div>
+            <h3 data-ar="[ADD الخدمة الثانية]" data-en="[ADD Service two]">[ADD الخدمة الثانية]</h3>
+            <p data-ar="[ADD فائدة الخدمة للعميل في جملة واحدة]" data-en="[ADD One-sentence customer benefit]">[ADD فائدة الخدمة للعميل في جملة واحدة]</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">◆</div>
+            <h3 data-ar="[ADD الخدمة الثالثة]" data-en="[ADD Service three]">[ADD الخدمة الثالثة]</h3>
+            <p data-ar="[ADD فائدة الخدمة للعميل في جملة واحدة]" data-en="[ADD One-sentence customer benefit]">[ADD فائدة الخدمة للعميل في جملة واحدة]</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section section-alt">
+      <div class="container about">
+        <h2 data-ar="من نحن" data-en="About us">من نحن</h2>
+        <p data-ar="[ADD قصة الشركة ورسالتها في فقرة قصيرة]" data-en="[ADD Your story and mission in a short paragraph]">[ADD قصة الشركة ورسالتها في فقرة قصيرة]</p>
+        <p data-ar="[ADD ما الذي يميزكم عن غيركم]" data-en="[ADD What makes you different]">[ADD ما الذي يميزكم عن غيركم]</p>
+      </div>
+    </section>
+
+    <section id="why" class="section">
+      <div class="container">
+        <h2 data-ar="لماذا تختارنا؟" data-en="Why choose us?">لماذا تختارنا؟</h2>
+        <ul class="grid features">
+          <li><strong data-ar="فريق متخصص" data-en="Expert team">فريق متخصص</strong>
+            <span data-ar="[ADD دليل حقيقي: خبرة، شهادات]" data-en="[ADD Real proof: experience, certifications]">[ADD دليل حقيقي: خبرة، شهادات]</span></li>
+          <li><strong data-ar="استجابة سريعة" data-en="Fast response">استجابة سريعة</strong>
+            <span data-ar="[ADD مثال: نرد خلال 24 ساعة]" data-en="[ADD e.g. We reply within 24 hours]">[ADD مثال: نرد خلال 24 ساعة]</span></li>
+          <li><strong data-ar="جودة مضمونة" data-en="Guaranteed quality">جودة مضمونة</strong>
+            <span data-ar="[ADD الضمان أو سياسة الجودة]" data-en="[ADD Warranty or quality policy]">[ADD الضمان أو سياسة الجودة]</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contact" class="section section-alt">
+      <div class="container contact">
+        <div>
+          <h2 data-ar="تواصل معنا" data-en="Contact us">تواصل معنا</h2>
+          <ul class="contact-list">
+            <li><span data-ar="هاتف:" data-en="Phone:">هاتف:</span> <a href="tel:{{PHONE}}"><bdi dir="ltr">{{PHONE}}</bdi></a></li>
+            <li><span data-ar="واتساب:" data-en="WhatsApp:">واتساب:</span> <a href="https://wa.me/{{WHATSAPP}}" rel="noopener"><bdi dir="ltr">{{WHATSAPP}}</bdi></a></li>
+            <li><span data-ar="البريد:" data-en="Email:">البريد:</span> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></li>
+            <li><span data-ar="العنوان:" data-en="Address:">العنوان:</span> <span data-ar="{{ADDRESS_AR}}" data-en="{{ADDRESS}}">{{ADDRESS_AR}}</span></li>
+          </ul>
+        </div>
+
+        <form class="contact-form" id="contact-form" novalidate>
+          <label for="f-name" data-ar="الاسم" data-en="Name">الاسم</label>
+          <input id="f-name" name="name" autocomplete="name" required>
+
+          <label for="f-phone" data-ar="رقم الهاتف" data-en="Phone number">رقم الهاتف</label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" dir="ltr" required>
+
+          <label for="f-message" data-ar="رسالتك" data-en="Your message">رسالتك</label>
+          <textarea id="f-message" name="message" rows="4" required></textarea>
+
+          <p class="form-error" role="alert" hidden data-ar="من فضلك املأ كل الحقول." data-en="Please fill in all fields.">من فضلك املأ كل الحقول.</p>
+          <button class="btn btn-primary" type="submit" data-ar="إرسال" data-en="Send">إرسال</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year">2026</span> <span data-ar="{{NAME_AR}}" data-en="{{NAME}}">{{NAME_AR}}</span>.
+        <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
+      <nav aria-label="Footer">
+        <a href="#services" data-ar="خدماتنا" data-en="Services">خدماتنا</a>
+        <a href="#contact" data-ar="تواصل معنا" data-en="Contact">تواصل معنا</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
